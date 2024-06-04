@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import streamlit as st
 
-def get_academic_articles(keyword, num_results=10):
+def get_academic_articles(keyword, num_results=10, language=None, year_range=None):
     base_url = "https://scholar.google.com/scholar"
     params = {"q": keyword, "hl": "en"}
     headers = {
@@ -31,6 +31,15 @@ def get_academic_articles(keyword, num_results=10):
                 year = part.strip()
                 break
 
+        # Filtrar por idioma
+        if language and language.lower() != "cualquier idioma" and language.lower() not in author_year.lower():
+            continue
+
+        # Filtrar por rango de años
+        if year_range:
+            if not year.isdigit() or int(year) < year_range[0] or int(year) > year_range[1]:
+                continue
+
         articles.append({"Author": author, "Title": title, "Link": link, "Year": year})
 
     return pd.DataFrame(articles)
@@ -38,16 +47,24 @@ def get_academic_articles(keyword, num_results=10):
 st.title("Búsqueda de Artículos Académicos")
 keyword = st.text_input("Ingrese la palabra clave para buscar artículos académicos:")
 
+st.sidebar.title("Filtros de Búsqueda")
+language_options = ["Inglés", "Español", "Cualquier idioma"]
+language_filter = st.sidebar.selectbox("Idioma:", options=language_options, index=2)
+start_year = st.sidebar.number_input("Año de inicio (deje en blanco para cualquier año):", min_value=1900, max_value=2022, step=1, value=1900)
+end_year = st.sidebar.number_input("Año de fin (deje en blanco para cualquier año):", min_value=1900, max_value=2022, step=1, value=2022)
+
 if st.button("Buscar"):
     if keyword:
         with st.spinner("Buscando artículos..."):
             try:
                 num_results = 10
-                df = get_academic_articles(keyword, num_results)
+                language = language_options[language_filter]
+                year_range = (start_year, end_year) if start_year <= end_year else None
+                df = get_academic_articles(keyword, num_results, language=language, year_range=year_range)
                 file_name = "articulos_academicos.xlsx"
                 df.to_excel(file_name, index=False)
                 st.success("Búsqueda completada!")
-                st.dataframe(df)
+                st.dataframe(df, escape_html=False)
 
                 with open(file_name, "rb") as file:
                     btn = st.download_button(
