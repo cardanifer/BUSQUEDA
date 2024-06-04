@@ -33,7 +33,7 @@ def get_academic_articles(keyword, num_results=10, year_range=None, language=Non
 
     for article in articles:
         if year_range is not None:
-            if article["Year"] != "N/A":
+            if article["Year"] != "N/A" and article["Year"].isdigit():
                 year = int(article["Year"])
                 if not (year_range[0] <= year <= year_range[1]):
                     continue
