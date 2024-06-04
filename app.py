@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import streamlit as st
 
-def get_academic_articles(keyword, num_results=10, year=None, language=None):
+def get_academic_articles(keyword, num_results=10, year_range=None, language=None):
     base_url = "https://scholar.google.com/scholar"
     params = {"q": keyword, "hl": "en"}
     headers = {
@@ -32,8 +32,13 @@ def get_academic_articles(keyword, num_results=10, year=None, language=None):
     filtered_articles = []
 
     for article in articles:
-        if year is not None and article["Year"] != "N/A" and int(article["Year"]) >= year:
-            continue
+        if year_range is not None:
+            if article["Year"] != "N/A":
+                year = int(article["Year"])
+                if not (year_range[0] <= year <= year_range[1]):
+                    continue
+            else:
+                continue
 
         if language != "Cualquiera" and article["Language"] != language:
             continue
@@ -49,7 +54,7 @@ st.title("Búsqueda de Artículos Académicos")
 keyword = st.text_input("Ingrese la palabra clave para buscar artículos académicos:")
 
 st.sidebar.title("Filtros de Búsqueda")
-year_filter = st.sidebar.slider("Año de Publicación", min_value=2000, max_value=2024, value=2024)
+year_range = st.sidebar.slider("Rango de Años de Publicación", min_value=1900, max_value=2022, value=[2000, 2022])
 language_filter = st.sidebar.selectbox("Idioma", ["Cualquiera", "Inglés", "Español", "Francés"])
 
 if st.button("Buscar"):
@@ -57,7 +62,7 @@ if st.button("Buscar"):
         with st.spinner("Buscando artículos..."):
             try:
                 num_results = 10
-                df = get_academic_articles(keyword, num_results, year=year_filter, language=language_filter)
+                df = get_academic_articles(keyword, num_results, year_range=year_range, language=language_filter)
                 file_name = "articulos_academicos.xlsx"
 
                 # Usar xlsxwriter para guardar los enlaces como hipervínculos
