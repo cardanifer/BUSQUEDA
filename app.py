@@ -22,7 +22,14 @@ def get_academic_articles(keyword, num_results=10):
 
         author_year_tag = entry.select_one(".gs_a")
         author_year = author_year_tag.text if author_year_tag else "N/A"
-        author, year = author_year.split(" - ")[0], author_year.split(" - ")[-1].split(',')[-1].strip()
+        author = author_year.split(" - ")[0]
+
+        # Extraer el año correctamente
+        year = "N/A"
+        for part in author_year.split(" - ")[1:]:
+            if part.strip().isdigit():
+                year = part.strip()
+                break
 
         articles.append({"Author": author, "Title": title, "Link": link, "Year": year})
 
@@ -35,7 +42,7 @@ if st.button("Buscar"):
     if keyword:
         with st.spinner("Buscando artículos..."):
             try:
-                num_results = 10  # Puedes modificar esto si deseas más resultados
+                num_results = 10
                 df = get_academic_articles(keyword, num_results)
                 file_name = "articulos_academicos.xlsx"
                 df.to_excel(file_name, index=False)
