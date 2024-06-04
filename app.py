@@ -64,7 +64,7 @@ if st.button("Buscar"):
                 file_name = "articulos_academicos.xlsx"
                 df.to_excel(file_name, index=False)
                 st.success("Búsqueda completada!")
-                st.dataframe(df, escape_html=False)
+                st.dataframe(df)
 
                 with open(file_name, "rb") as file:
                     btn = st.download_button(
