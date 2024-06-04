@@ -3,13 +3,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import streamlit as st
 
-# Instalar el módulo xlsxwriter si no está instalado
-try:
-    import xlsxwriter
-except ImportError:
-    !pip install xlsxwriter
-    import xlsxwriter
-
 def get_academic_articles(keyword, num_results=10, year_range=None, language=None):
     base_url = "https://scholar.google.com/scholar"
     params = {"q": keyword, "hl": "en"}
@@ -50,9 +43,6 @@ def get_academic_articles(keyword, num_results=10, year_range=None, language=Non
         if language != "Cualquiera" and article["Language"] != language:
             continue
 
-        # Agregar el enlace como hipervínculo
-        article["Link"] = f'=HYPERLINK("{article["Link"]}","{article["Link"]}")'
-
         filtered_articles.append(article)
 
     return pd.DataFrame(filtered_articles)
@@ -61,7 +51,7 @@ st.title("Búsqueda de Artículos Académicos")
 keyword = st.text_input("Ingrese la palabra clave para buscar artículos académicos:")
 
 st.sidebar.title("Filtros de Búsqueda")
-year_range = st.sidebar.slider("Rango de Años de Publicación", min_value=1900, max_value=2022, value=[2000, 2022])
+year_range = st.sidebar.slider("Rango de Años de Publicación", min_value=2000, max_value=2024, value=[2000, 2024])
 language_filter = st.sidebar.selectbox("Idioma", ["Cualquiera", "Inglés", "Español", "Francés"])
 
 if st.button("Buscar"):
@@ -72,19 +62,7 @@ if st.button("Buscar"):
                 df = get_academic_articles(keyword, num_results, year_range=year_range, language=language_filter)
                 file_name = "articulos_academicos.xlsx"
 
-                # Usar xlsxwriter para guardar los enlaces como hipervínculos
-                writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
-                df.to_excel(writer, index=False)
-
-                workbook = writer.book
-                worksheet = writer.sheets['Sheet1']
-
-                # Configurar el formato de los hipervínculos
-                cell_format = workbook.add_format({'font_color': 'blue', 'underline': True})
-                worksheet.set_column('C:C', None, cell_format)
-
-                writer.save()
-
+                df.to_excel(file_name, index=False)
                 st.success("Búsqueda completada!")
                 st.dataframe(df)
 
