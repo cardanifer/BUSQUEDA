@@ -32,7 +32,7 @@ def get_academic_articles(keyword, num_results=10, language=None, year_range=Non
                 break
 
         # Filtrar por idioma
-        if language and language.lower() != "cualquier idioma" and language.lower() not in author_year.lower():
+        if language and language.lower() != "cualquiera idioma" and language.lower() not in author_year.lower():
             continue
 
         # Filtrar por rango de años
@@ -48,17 +48,17 @@ st.title("Búsqueda de Artículos Académicos")
 keyword = st.text_input("Ingrese la palabra clave para buscar artículos académicos:")
 
 st.sidebar.title("Filtros de Búsqueda")
-language_options = ["Inglés", "Español", "Cualquier idioma"]
+language_options = ["Inglés", "Español", "Cualquiera idioma"]
 language_filter = st.sidebar.selectbox("Idioma:", options=language_options, index=2)
-start_year = st.sidebar.number_input("Año de inicio (deje en blanco para cualquier año):", min_value=1900, max_value=2022, step=1, value=1900)
-end_year = st.sidebar.number_input("Año de fin (deje en blanco para cualquier año):", min_value=1900, max_value=2022, step=1, value=2022)
+start_year = st.sidebar.number_input("Año de inicio:", min_value=2000, max_value=2024, step=1, value=2000)
+end_year = st.sidebar.number_input("Año de fin:", min_value=2000, max_value=2024, step=1, value=2024)
 
 if st.button("Buscar"):
     if keyword:
         with st.spinner("Buscando artículos..."):
             try:
                 num_results = 10
-                language = language_options[language_filter]
+                language = language_options[language_options.index(language_filter)]
                 year_range = (start_year, end_year) if start_year <= end_year else None
                 df = get_academic_articles(keyword, num_results, language=language, year_range=year_range)
                 file_name = "articulos_academicos.xlsx"
