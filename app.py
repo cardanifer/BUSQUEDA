@@ -1,12 +1,14 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+import streamlit as st
+
+# Instalar el módulo xlsxwriter si no está instalado
 try:
     import xlsxwriter
 except ImportError:
     !pip install xlsxwriter
     import xlsxwriter
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
-import streamlit as st
 
 def get_academic_articles(keyword, num_results=10, year_range=None, language=None):
     base_url = "https://scholar.google.com/scholar"
@@ -59,7 +61,7 @@ st.title("Búsqueda de Artículos Académicos")
 keyword = st.text_input("Ingrese la palabra clave para buscar artículos académicos:")
 
 st.sidebar.title("Filtros de Búsqueda")
-year_range = st.sidebar.slider("Rango de Años de Publicación", min_value=2000, max_value=2024, value=[2000, 2024])
+year_range = st.sidebar.slider("Rango de Años de Publicación", min_value=1900, max_value=2022, value=[2000, 2022])
 language_filter = st.sidebar.selectbox("Idioma", ["Cualquiera", "Inglés", "Español", "Francés"])
 
 if st.button("Buscar"):
