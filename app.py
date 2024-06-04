@@ -49,7 +49,7 @@ st.title("Búsqueda de Artículos Académicos")
 keyword = st.text_input("Ingrese la palabra clave para buscar artículos académicos:")
 
 st.sidebar.title("Filtros de Búsqueda")
-year_filter = st.sidebar.slider("Año de Publicación", min_value=1900, max_value=2022, value=2022)
+year_filter = st.sidebar.slider("Año de Publicación", min_value=2000, max_value=2024, value=2024)
 language_filter = st.sidebar.selectbox("Idioma", ["Cualquiera", "Inglés", "Español", "Francés"])
 
 if st.button("Buscar"):
