@@ -1,4 +1,8 @@
-pip install xlsxwriter
+try:
+    import xlsxwriter
+except ImportError:
+    !pip install xlsxwriter
+    import xlsxwriter
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
